@@ -1,0 +1,19 @@
+# IDE files
+.idea/
+*.iml
+
+# Build files
+target/
+
+# Environment secrets
+.env
+.env.*
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+
+# Local configuration with secrets
+src/main/resources/application-local.properties
