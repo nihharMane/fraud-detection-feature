@@ -18,6 +18,11 @@
         private final PaymentService paymentService;
 
 
+        @GetMapping("/health")
+        public String health() {
+            return "Fraud Detection API is running!";
+        }
+
         @PostMapping
         public String createPayment(@Valid @RequestBody PaymentRequest paymentRequest,
                                     @RequestHeader (value = "Hmac-Signature", required = false)

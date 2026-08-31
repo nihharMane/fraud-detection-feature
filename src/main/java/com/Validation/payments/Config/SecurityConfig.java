@@ -40,11 +40,13 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterAfter(new HmacFilter(hmacSHA256Util, jsonUtil), LogoutFilter.class)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/v1/payments/health").permitAll()
                         .anyRequest().authenticated()
                 );
 
         return http.build();
     }
+
 
     /**
      * Internal fraud-dashboard reads/overrides - no HMAC (no client-signed body on GET),
