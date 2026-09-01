@@ -30,11 +30,11 @@ public class MerchantPaymentRequestRepositoryImpl implements MerchantPaymentRequ
                 entity.getMerchantTxnReference());
 
         String sql = """
-        INSERT INTO merchant_payment_request
-        (endUserID, merchantTxnReference, transactionRequest, creationDate)
-        VALUES
-        (:endUserID, :txnRef, :txnRequest, :creationDate)
-        """;
+    INSERT INTO merchant_payment_request
+    (end_userid, merchant_txn_reference, transaction_request, creation_date)
+    VALUES
+    (:endUserID, :txnRef, :txnRequest, :creationDate)
+    """;
 
         Map<String, Object> params = new HashMap<>();
         params.put("endUserID", entity.getEndUserID());
