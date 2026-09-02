@@ -28,10 +28,9 @@ public class MerchantPaymentRequestRepositoryImpl implements MerchantPaymentRequ
 
         log.info("Saving MerchantPaymentRequestValidation for txnRef: {}",
                 entity.getMerchantTxnReference());
-
         String sql = """
     INSERT INTO merchant_payment_request
-    (end_userid, merchant_txn_reference, transaction_request, creation_date)
+    (endUserID, merchantTxnReference, transactionRequest, creationDate)
     VALUES
     (:endUserID, :txnRef, :txnRequest, :creationDate)
     """;
