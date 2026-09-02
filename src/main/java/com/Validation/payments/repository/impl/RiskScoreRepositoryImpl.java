@@ -29,11 +29,11 @@ public class RiskScoreRepositoryImpl implements RiskScoreRepository {
         log.info("Saving RiskScore for txnRef: {}", entity.getMerchantTxnReference());
 
         String sql = """
-        INSERT INTO risk_score
-        (merchantTxnReference, endUserID, score, verdict, reasonSummary, createdDate)
-        VALUES
-        (:txnRef, :endUserID, :score, :verdict, :reasonSummary, :createdDate)
-        """;
+    INSERT INTO risk_score
+    (merchantTxnReference, endUserID, score, verdict, reasonSummary, createdDate, overridden)
+    VALUES
+    (:txnRef, :endUserID, :score, :verdict, :reasonSummary, :createdDate, :overridden)
+    """;
 
         Map<String, Object> params = new HashMap<>();
         params.put("txnRef", entity.getMerchantTxnReference());
@@ -42,6 +42,7 @@ public class RiskScoreRepositoryImpl implements RiskScoreRepository {
         params.put("verdict", entity.getVerdict());
         params.put("reasonSummary", entity.getReasonSummary());
         params.put("createdDate", entity.getCreatedDate());
+        params.put("overridden", false);
 
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
