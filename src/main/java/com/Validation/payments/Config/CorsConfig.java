@@ -1,6 +1,5 @@
 package com.Validation.payments.Config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -8,9 +7,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfig {
-
-    @Value("${FRONTEND_URL:http://localhost:5173}")
-    private String frontendUrl;
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -20,10 +16,15 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/v1/fraud/**")
                         .allowedOrigins(
-                                frontendUrl,
-                                "http://localhost:5173"
+                                "http://localhost:5173",
+                                "https://fraud-shield-dashboard.onrender.com"
                         )
-                        .allowedMethods("GET", "PUT", "POST", "OPTIONS")
+                        .allowedMethods(
+                                "GET",
+                                "PUT",
+                                "POST",
+                                "OPTIONS"
+                        )
                         .allowedHeaders("*");
             }
         };
