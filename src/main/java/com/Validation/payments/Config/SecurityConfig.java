@@ -71,12 +71,27 @@ public class SecurityConfig {
 
     private CorsConfigurationSource fraudDashboardCorsSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
-        config.setAllowedMethods(List.of("GET", "PUT", "POST", "OPTIONS"));
+
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://localhost:3000",
+                "https://fraud-shield-dashboard.onrender.com"
+        ));
+
+        config.setAllowedMethods(List.of(
+                "GET",
+                "PUT",
+                "POST",
+                "OPTIONS"
+        ));
+
         config.setAllowedHeaders(List.of("*"));
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
         source.registerCorsConfiguration("/v1/fraud/**", config);
+
         return source;
     }
 }
