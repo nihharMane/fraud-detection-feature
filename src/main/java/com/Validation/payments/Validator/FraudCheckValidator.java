@@ -45,6 +45,11 @@ public class FraudCheckValidator implements BusinessValidator {
         UserTransactionStatsEntity stats = statsRepository.findByEndUserID(endUserID).orElse(null);
         long txnCountLastHour = statsRepository.countTransactionsInLastHour(endUserID);
 
+        log.info("Fraud rules loaded: {}",
+                fraudRules.stream()
+                        .map(rule -> rule.getClass().getSimpleName())
+                        .toList());
+
         List<FraudRuleResult> results = fraudRules.stream()
                 .map(rule -> rule.evaluate(paymentRequest, stats, txnCountLastHour))
                 .toList();

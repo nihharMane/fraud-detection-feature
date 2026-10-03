@@ -4,6 +4,7 @@
 
 # Build files
 target/
+request.json
 
 # Environment secrets
 .env
@@ -16,4 +17,8 @@ target/
 .DS_Store
 
 # Local configuration with secrets
+src/main/resources/application-local.propertiesrequest.json
 src/main/resources/application-local.properties
+src/main/resources/application-local.properties
+src/main/java/com/Validation/payments/controller/RedisTestController.java
+src/main/java/com/Validation/payments/controller/RedisTestController.java
