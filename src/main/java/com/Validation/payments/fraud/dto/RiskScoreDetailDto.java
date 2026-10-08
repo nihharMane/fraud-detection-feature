@@ -20,7 +20,9 @@ public class RiskScoreDetailDto {
     private boolean overridden;
     private String overrideNote;
     private LocalDateTime createdDate;
+    private String hostedPageUrl;
     private List<FlaggedReasonDto> flaggedReasons;
+
 
     @Data
     @NoArgsConstructor

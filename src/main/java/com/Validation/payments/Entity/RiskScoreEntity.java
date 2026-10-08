@@ -40,4 +40,7 @@ public class RiskScoreEntity {
 
     @Column(name = "overrideNote")
     private String overrideNote;
+
+    @Column(name = "hostedPageUrl")
+    private String hostedPageUrl;
 }

@@ -22,5 +22,7 @@ public interface RiskScoreRepository {
 
     List<FlaggedReasonEntity> findFlaggedReasonsByRiskScoreId(int riskScoreId);
 
+    void updateHostedPageUrl(String merchantTxnReference, String hostedPageUrl);
+
     void markOverridden(int riskScoreId, String overrideNote);
 }

@@ -4,12 +4,12 @@ import com.Validation.payments.Constants.ErrorCode;
 import com.Validation.payments.Constants.ValidatorRuleEnum;
 import com.Validation.payments.Exception.PaymentValidationException;
 import com.Validation.payments.client.StripeProviderClient;
-
+import com.Validation.payments.repository.interfaces.RiskScoreRepository;
 import com.Validation.payments.pojo.PaymentRequest;
 import com.Validation.payments.service.BusinessValidator;
 import com.Validation.payments.service.PaymentService;
 import com.Validation.payments.client.StripePaymentMapper;
-import com.Validation.payments.client.StripeProviderClient;
+
 import com.Validation.payments.client.dto.StripeCreatePaymentRequest;
 import com.Validation.payments.client.dto.StripePaymentResponse;
 import com.Validation.payments.pojo.PaymentValidationResponse;
@@ -36,7 +36,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final ApplicationContext applicationContext;
     private final StripeProviderClient stripeProviderClient;
     private final StripePaymentMapper stripePaymentMapper;
-
+    private final RiskScoreRepository riskScoreRepository;
     @Override
     public PaymentValidationResponse ValidateAndCreatePayment(
             PaymentRequest paymentRequest,
@@ -120,6 +120,10 @@ public class PaymentServiceImpl implements PaymentService {
             log.info(
                     "Stripe Checkout Session created: {}",
                     stripeResponse.getStripeSessionId()
+            );
+            riskScoreRepository.updateHostedPageUrl(
+                    paymentRequest.getPayment().getMerchantTxnRef(),
+                    stripeResponse.getHostedPageUrl()
             );
 
             return new PaymentValidationResponse(

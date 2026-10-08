@@ -30,11 +30,11 @@ public class RiskScoreRepositoryImpl implements RiskScoreRepository {
         log.info("Saving RiskScore for txnRef: {}", entity.getMerchantTxnReference());
 
         String sql = """
-    INSERT INTO risk_score
-    (merchantTxnReference, endUserID, score, verdict, reasonSummary, createdDate, overridden)
-    VALUES
-    (:txnRef, :endUserID, :score, :verdict, :reasonSummary, :createdDate, :overridden)
-    """;
+        INSERT INTO risk_score
+        (merchantTxnReference, endUserID, score, verdict, reasonSummary, createdDate, overridden)
+        VALUES
+        (:txnRef, :endUserID, :score, :verdict, :reasonSummary, :createdDate, :overridden)
+        """;
 
         Map<String, Object> params = new HashMap<>();
         params.put("txnRef", entity.getMerchantTxnReference());
@@ -47,11 +47,19 @@ public class RiskScoreRepositoryImpl implements RiskScoreRepository {
 
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
+            jdbcTemplate.update(
+                    sql,
+                    new MapSqlParameterSource(params),
+                    keyHolder
+            );
 
             Number generatedId = keyHolder.getKey();
+
             if (generatedId != null) {
-                log.info("RiskScore saved. Generated ID: {}", generatedId.intValue());
+                log.info(
+                        "RiskScore saved. Generated ID: {}",
+                        generatedId.intValue()
+                );
                 return generatedId.intValue();
             }
 
@@ -63,14 +71,25 @@ public class RiskScoreRepositoryImpl implements RiskScoreRepository {
 
         } catch (Exception ex) {
             log.error("Error inserting risk score", ex);
-            throw new RuntimeException("Database error while inserting risk score", ex);
+            throw new RuntimeException(
+                    "Database error while inserting risk score",
+                    ex
+            );
         }
     }
 
     @Override
-    public void saveFlaggedReason(int riskScoreId, String ruleTriggered, String details) {
+    public void saveFlaggedReason(
+            int riskScoreId,
+            String ruleTriggered,
+            String details
+    ) {
 
-        log.info("Saving FlaggedReason for riskScoreId: {}, rule: {}", riskScoreId, ruleTriggered);
+        log.info(
+                "Saving FlaggedReason for riskScoreId: {}, rule: {}",
+                riskScoreId,
+                ruleTriggered
+        );
 
         String sql = """
         INSERT INTO flagged_reason
@@ -88,29 +107,18 @@ public class RiskScoreRepositoryImpl implements RiskScoreRepository {
             jdbcTemplate.update(sql, params);
         } catch (Exception ex) {
             log.error("Error inserting flagged reason", ex);
-            throw new RuntimeException("Database error while inserting flagged reason", ex);
+            throw new RuntimeException(
+                    "Database error while inserting flagged reason",
+                    ex
+            );
         }
     }
 
     @Override
-    public java.util.List<RiskScoreEntity> findFlagged(int limit, int offset) {
-
-        String sql = """
-        SELECT id, merchantTxnReference, endUserID, score, verdict, reasonSummary,
-               createdDate, overridden, overrideNote
-        FROM risk_score
-        WHERE verdict IN ('MEDIUM', 'HIGH')
-        ORDER BY createdDate DESC
-        LIMIT :limit OFFSET :offset
-        """;
-
-        Map<String, Object> params = Map.of("limit", limit, "offset", offset);
-
-        return jdbcTemplate.query(sql, params, this::mapRow);
-    }
-
-    @Override
-    public List<RiskScoreEntity> findAllTransactions(int limit, int offset) {
+    public java.util.List<RiskScoreEntity> findFlagged(
+            int limit,
+            int offset
+    ) {
 
         String sql = """
         SELECT id,
@@ -121,7 +129,41 @@ public class RiskScoreRepositoryImpl implements RiskScoreRepository {
                reasonSummary,
                createdDate,
                overridden,
-               overrideNote
+               overrideNote,
+               hostedPageUrl
+        FROM risk_score
+        WHERE verdict IN ('MEDIUM', 'HIGH')
+        ORDER BY createdDate DESC
+        LIMIT :limit OFFSET :offset
+        """;
+
+        Map<String, Object> params =
+                Map.of("limit", limit, "offset", offset);
+
+        return jdbcTemplate.query(
+                sql,
+                params,
+                this::mapRow
+        );
+    }
+
+    @Override
+    public List<RiskScoreEntity> findAllTransactions(
+            int limit,
+            int offset
+    ) {
+
+        String sql = """
+        SELECT id,
+               merchantTxnReference,
+               endUserID,
+               score,
+               verdict,
+               reasonSummary,
+               createdDate,
+               overridden,
+               overrideNote,
+               hostedPageUrl
         FROM risk_score
         ORDER BY createdDate DESC
         LIMIT :limit OFFSET :offset
@@ -140,55 +182,95 @@ public class RiskScoreRepositoryImpl implements RiskScoreRepository {
     }
 
     @Override
-    public java.util.Optional<RiskScoreEntity> findByMerchantTxnReference(String merchantTxnReference) {
+    public java.util.Optional<RiskScoreEntity> findByMerchantTxnReference(
+            String merchantTxnReference
+    ) {
 
         String sql = """
-        SELECT id, merchantTxnReference, endUserID, score, verdict, reasonSummary,
-               createdDate, overridden, overrideNote
+        SELECT id,
+               merchantTxnReference,
+               endUserID,
+               score,
+               verdict,
+               reasonSummary,
+               createdDate,
+               overridden,
+               overrideNote,
+               hostedPageUrl
         FROM risk_score
         WHERE merchantTxnReference = :txnRef
         ORDER BY createdDate DESC
         LIMIT 1
         """;
 
-        Map<String, Object> params = Map.of("txnRef", merchantTxnReference);
+        Map<String, Object> params =
+                Map.of("txnRef", merchantTxnReference);
 
-        return jdbcTemplate.query(sql, params, this::mapRow).stream().findFirst();
+        return jdbcTemplate.query(
+                sql,
+                params,
+                this::mapRow
+        ).stream().findFirst();
     }
 
     @Override
-    public java.util.List<com.Validation.payments.Entity.FlaggedReasonEntity> findFlaggedReasonsByRiskScoreId(int riskScoreId) {
+    public java.util.List<com.Validation.payments.Entity.FlaggedReasonEntity>
+    findFlaggedReasonsByRiskScoreId(int riskScoreId) {
 
         String sql = """
-        SELECT id, riskScoreId, ruleTriggered, details
+        SELECT id,
+               riskScoreId,
+               ruleTriggered,
+               details
         FROM flagged_reason
         WHERE riskScoreId = :riskScoreId
         """;
 
-        Map<String, Object> params = Map.of("riskScoreId", riskScoreId);
+        Map<String, Object> params =
+                Map.of("riskScoreId", riskScoreId);
 
-        return jdbcTemplate.query(sql, params, (rs, rowNum) -> {
-            com.Validation.payments.Entity.FlaggedReasonEntity entity = new com.Validation.payments.Entity.FlaggedReasonEntity();
-            entity.setId(rs.getInt("id"));
-            entity.setRiskScoreId(rs.getInt("riskScoreId"));
-            entity.setRuleTriggered(rs.getString("ruleTriggered"));
-            entity.setDetails(rs.getString("details"));
-            return entity;
-        });
+        return jdbcTemplate.query(
+                sql,
+                params,
+                (rs, rowNum) -> {
+
+                    com.Validation.payments.Entity.FlaggedReasonEntity entity =
+                            new com.Validation.payments.Entity.FlaggedReasonEntity();
+
+                    entity.setId(rs.getInt("id"));
+                    entity.setRiskScoreId(rs.getInt("riskScoreId"));
+                    entity.setRuleTriggered(
+                            rs.getString("ruleTriggered")
+                    );
+                    entity.setDetails(
+                            rs.getString("details")
+                    );
+
+                    return entity;
+                }
+        );
     }
 
     @Override
-    public void markOverridden(int riskScoreId, String overrideNote) {
+    public void markOverridden(
+            int riskScoreId,
+            String overrideNote
+    ) {
 
         String sql = """
         UPDATE risk_score
-        SET overridden = true, overrideNote = :overrideNote
+        SET overridden = true,
+            overrideNote = :overrideNote
         WHERE id = :id
         """;
 
-        Map<String, Object> params = Map.of("id", riskScoreId, "overrideNote", overrideNote);
+        Map<String, Object> params = Map.of(
+                "id", riskScoreId,
+                "overrideNote", overrideNote
+        );
 
         int updated = jdbcTemplate.update(sql, params);
+
         if (updated == 0) {
             throw new PaymentValidationException(
                     ErrorCode.RECORD_NOT_FOUND.getCode(),
@@ -198,18 +280,78 @@ public class RiskScoreRepositoryImpl implements RiskScoreRepository {
         }
     }
 
-    private RiskScoreEntity mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
+    @Override
+    public void updateHostedPageUrl(
+            String merchantTxnReference,
+            String hostedPageUrl
+    ) {
+
+        String sql = """
+        UPDATE risk_score
+        SET hostedPageUrl = :hostedPageUrl
+        WHERE merchantTxnReference = :merchantTxnReference
+        """;
+
+        Map<String, Object> params = Map.of(
+                "merchantTxnReference",
+                merchantTxnReference,
+                "hostedPageUrl",
+                hostedPageUrl
+        );
+
+        int updated = jdbcTemplate.update(sql, params);
+
+        if (updated == 0) {
+            throw new PaymentValidationException(
+                    ErrorCode.RECORD_NOT_FOUND.getCode(),
+                    ErrorCode.RECORD_NOT_FOUND.getMessage(),
+                    HttpStatus.NOT_FOUND
+            );
+        }
+    }
+
+    private RiskScoreEntity mapRow(
+            java.sql.ResultSet rs,
+            int rowNum
+    ) throws java.sql.SQLException {
+
         RiskScoreEntity entity = new RiskScoreEntity();
+
         entity.setId(rs.getInt("id"));
-        entity.setMerchantTxnReference(rs.getString("merchantTxnReference"));
-        entity.setEndUserID(rs.getString("endUserID"));
-        entity.setScore(rs.getInt("score"));
-        entity.setVerdict(rs.getString("verdict"));
-        entity.setReasonSummary(rs.getString("reasonSummary"));
-        entity.setCreatedDate(rs.getTimestamp("createdDate") != null
-                ? rs.getTimestamp("createdDate").toLocalDateTime() : null);
-        entity.setOverridden(rs.getBoolean("overridden"));
-        entity.setOverrideNote(rs.getString("overrideNote"));
+        entity.setMerchantTxnReference(
+                rs.getString("merchantTxnReference")
+        );
+        entity.setEndUserID(
+                rs.getString("endUserID")
+        );
+        entity.setScore(
+                rs.getInt("score")
+        );
+        entity.setVerdict(
+                rs.getString("verdict")
+        );
+        entity.setReasonSummary(
+                rs.getString("reasonSummary")
+        );
+
+        entity.setCreatedDate(
+                rs.getTimestamp("createdDate") != null
+                        ? rs.getTimestamp("createdDate").toLocalDateTime()
+                        : null
+        );
+
+        entity.setOverridden(
+                rs.getBoolean("overridden")
+        );
+
+        entity.setOverrideNote(
+                rs.getString("overrideNote")
+        );
+
+        entity.setHostedPageUrl(
+                rs.getString("hostedPageUrl")
+        );
+
         return entity;
     }
 }

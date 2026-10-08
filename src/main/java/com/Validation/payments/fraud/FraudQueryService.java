@@ -54,6 +54,7 @@ public class FraudQueryService {
                 entity.isOverridden(),
                 entity.getOverrideNote(),
                 entity.getCreatedDate(),
+                entity.getHostedPageUrl(),
                 reasonDtos
         );
     }
