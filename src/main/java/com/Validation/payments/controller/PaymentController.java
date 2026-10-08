@@ -1,38 +1,45 @@
-    package com.Validation.payments.controller;
+package com.Validation.payments.controller;
 
-    import com.Validation.payments.pojo.PaymentRequest;
-    import com.Validation.payments.service.PaymentService;
-    import jakarta.validation.Valid;
-    import lombok.RequiredArgsConstructor;
+import com.Validation.payments.pojo.PaymentRequest;
+import com.Validation.payments.pojo.PaymentValidationResponse;
+import com.Validation.payments.service.PaymentService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
-    import lombok.extern.slf4j.Slf4j;
-    import org.springframework.web.bind.annotation.*;
+@RestController
+@RequestMapping("/v1/payments")
+@Slf4j
+@RequiredArgsConstructor
+public class PaymentController {
 
-    @RestController
-    @RequestMapping("/v1/payments")
-    @Slf4j
-    @RequiredArgsConstructor
+    private final PaymentService paymentService;
 
-    public class PaymentController {
+    @PostMapping
+    public PaymentValidationResponse createPayment(
+            @Valid @RequestBody PaymentRequest paymentRequest,
+            @RequestHeader(
+                    value = "Hmac-Signature",
+                    required = false
+            )
+            String hmacSignature) {
 
-        private final PaymentService paymentService;
+        log.info("Hmac Signature received");
 
+        log.info("Creating Payment...");
 
-        @GetMapping("/health")
-        public String health() {
-            return "Fraud Detection API is running!";
-        }
+        PaymentValidationResponse serviceResponse =
+                paymentService.ValidateAndCreatePayment(
+                        paymentRequest,
+                        hmacSignature
+                );
 
-        @PostMapping
-        public String createPayment(@Valid @RequestBody PaymentRequest paymentRequest,
-                                    @RequestHeader (value = "Hmac-Signature", required = false)
-                                    String hmacSignature) {
-            log.info("Hmac Signature Response: " + hmacSignature );
+        log.info(
+                "Payment processed successfully: {}",
+                serviceResponse
+        );
 
-            log.info("Creating Payment..." );
-            String serviceResponse= paymentService.ValidateAndCreatePayment(paymentRequest,hmacSignature);
-            log.info(" Payment created successfully {}",serviceResponse );
-            return serviceResponse;
-
-        }
+        return serviceResponse;
     }
+}
