@@ -16,6 +16,8 @@ public interface RiskScoreRepository {
 
     List<RiskScoreEntity> findFlagged(int limit, int offset);
 
+    List<RiskScoreEntity> findAllTransactions(int limit, int offset);
+
     Optional<RiskScoreEntity> findByMerchantTxnReference(String merchantTxnReference);
 
     List<FlaggedReasonEntity> findFlaggedReasonsByRiskScoreId(int riskScoreId);

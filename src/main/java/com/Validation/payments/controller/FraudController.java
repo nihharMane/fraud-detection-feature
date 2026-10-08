@@ -27,6 +27,15 @@ public class FraudController {
         log.info("Fetching flagged transactions | limit: {}, offset: {}", limit, offset);
         return fraudQueryService.listFlagged(limit, offset);
     }
+    @GetMapping("/transactions")
+    public List<RiskScoreSummaryDto> getAllTransactions(
+            @RequestParam(defaultValue = "50") int limit,
+            @RequestParam(defaultValue = "0") int offset) {
+
+        log.info("Fetching all transactions | limit: {}, offset: {}", limit, offset);
+
+        return fraudQueryService.listAll(limit, offset);
+    }
 
     @GetMapping("/{merchantTxnReference}")
     public RiskScoreDetailDto getDetail(@PathVariable String merchantTxnReference) {

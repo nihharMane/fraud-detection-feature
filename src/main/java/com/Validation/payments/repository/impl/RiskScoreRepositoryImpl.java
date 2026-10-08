@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -106,6 +107,36 @@ public class RiskScoreRepositoryImpl implements RiskScoreRepository {
         Map<String, Object> params = Map.of("limit", limit, "offset", offset);
 
         return jdbcTemplate.query(sql, params, this::mapRow);
+    }
+
+    @Override
+    public List<RiskScoreEntity> findAllTransactions(int limit, int offset) {
+
+        String sql = """
+        SELECT id,
+               merchantTxnReference,
+               endUserID,
+               score,
+               verdict,
+               reasonSummary,
+               createdDate,
+               overridden,
+               overrideNote
+        FROM risk_score
+        ORDER BY createdDate DESC
+        LIMIT :limit OFFSET :offset
+        """;
+
+        Map<String, Object> params = Map.of(
+                "limit", limit,
+                "offset", offset
+        );
+
+        return jdbcTemplate.query(
+                sql,
+                params,
+                this::mapRow
+        );
     }
 
     @Override

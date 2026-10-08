@@ -24,7 +24,11 @@ public class FraudQueryService {
                 .map(this::toSummary)
                 .toList();
     }
-
+    public List<RiskScoreSummaryDto> listAll(int limit, int offset) {
+        return riskScoreRepository.findAllTransactions(limit, offset).stream()
+                .map(this::toSummary)
+                .toList();
+    }
     public RiskScoreDetailDto getDetail(String merchantTxnReference) {
 
         RiskScoreEntity entity = riskScoreRepository.findByMerchantTxnReference(merchantTxnReference)
