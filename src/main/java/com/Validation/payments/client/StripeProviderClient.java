@@ -2,6 +2,7 @@ package com.Validation.payments.client;
 
 import com.Validation.payments.client.dto.StripeCreatePaymentRequest;
 import com.Validation.payments.client.dto.StripePaymentResponse;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -20,6 +21,7 @@ public class StripeProviderClient {
                 .build();
     }
 
+    @CircuitBreaker(name = "stripeProvider")
     public StripePaymentResponse createPayment(
             StripeCreatePaymentRequest request) {
 
@@ -29,4 +31,6 @@ public class StripeProviderClient {
                 .retrieve()
                 .body(StripePaymentResponse.class);
     }
+
+
 }
